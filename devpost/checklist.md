@@ -29,7 +29,7 @@ Build mode: learn
   Learner check: Run `npm test` to see tests pass; reload the app to observe the glowing cyan route line plotted cleanly on the grid.
   Commit: `Implement deterministic A* pathfinder and cyan route renderer`
 
-- [ ] **3. Animated Robot Movement & Telemetry Narration**
+- [x] **3. Animated Robot Movement & Telemetry Narration**
   Becomes usable: The robot advances cell-by-cell along the cyan route, trims traversed cells, secures cargo, navigates to the delivery bay, and streams milestone updates to the log.
   Why now: Validates the animation step loop, cargo attachment state, and waypoint consumption before adding dynamic interruptions.
   PRD ref: `prd.md > Features and Behavior` (2. Deterministic A* Pathfinding, 4. Real-Time Explainability Log)
