@@ -49,7 +49,7 @@ Build mode: learn
   Learner check: Start a move, click a cell directly in the robot's upcoming path; observe the robot pause, replan a detour in real time, and resume while reading the detour explanation in the log. Click to trap the goal and verify it halts safely.
   Commit: `Implement live obstacle placement and dynamic A* replanning`
 
-- [ ] **5. Dual Mission Parser (LLM + Offline Keyword Fallback) & Demo Controls**
+- [x] **5. Dual Mission Parser (LLM + Offline Keyword Fallback) & Demo Controls**
   Becomes usable: Full end-to-end loop: custom mission input, 3 preset example buttons, 1 deliberate failure test, reset button, 1x/2x speed selector, and dual LLM/keyword parser with offline reliability.
   Why now: Completes the full user journey ("plain-English in, coordinated adaptive behavior out") and prepares the exact demo workflow for the recording.
   PRD ref: `prd.md > Features and Behavior` (1. Mission Input & Parser, 5. Simulation & Demo Controls)

@@ -128,7 +128,8 @@ export class SimulationManager {
       const path = findPath(this.robot.position, destCoord, this.world);
 
       if (!path) {
-        this.telemetry.log('ERROR', `No valid path to delivery zone ${this.activeTask.destination}. Halting safely.`);
+        this.telemetry.log('ERROR', `No valid path to delivery zone ${this.activeTask.destination.replace('_', ' ').toUpperCase()}. Halting safely.`);
+        this.telemetry.log('ERROR', 'Mission blocked: no valid path to destination. Clear an obstacle or reset the mission.');
         this.setState('BLOCKED');
         this.renderer.render(this.robot.position, this.robot.cargo, []);
         return;

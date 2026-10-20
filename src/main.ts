@@ -2,7 +2,7 @@ import { WarehouseWorld } from './world/warehouseWorld.ts';
 import { CanvasRenderer } from './render/canvasRenderer.ts';
 import { TelemetryLog } from './ui/telemetryLog.ts';
 import { SimulationManager } from './sim/simulationManager.ts';
-import { MissionTask, RobotState } from './types.ts';
+import { RobotState } from './types.ts';
 
 // 1. Initialize core system modules
 const world = new WarehouseWorld();
@@ -51,84 +51,11 @@ telemetry.log('INFO', 'RoboMission Fleet initialized. 16x12 warehouse world read
 telemetry.log('INFO', 'Click "Run Mission" or choose an example above to begin.');
 renderer.render(world.dock, null, []);
 
-// 3. Preset Missions configuration
-const PRESET_TASKS: Record<string, MissionTask> = {
-  '1': {
-    action: 'deliver',
-    targetItem: 'red_box',
-    destination: 'zone_a'
-  },
-  '2': {
-    action: 'deliver',
-    targetItem: 'blue_box',
-    destination: 'zone_b'
-  },
-  '3': {
-    action: 'deliver',
-    targetItem: 'green_box',
-    destination: 'zone_a',
-    returnToDock: true
-  }
-};
+import { ControlPanel } from './ui/controls.ts';
 
-// Preset button handlers
-document.querySelectorAll<HTMLButtonElement>('.btn-preset').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const presetId = btn.getAttribute('data-preset');
-    if (!presetId) return;
+// 3. Initialize Control Panel (Parser, Presets, Input, Speed, Reset)
+new ControlPanel(simManager, world, telemetry, updateStatusUI);
 
-    if (presetId === '4') {
-      // Deliberate failure test: trap Zone A
-      telemetry.log('WARN', 'Deliberate failure test selected: Enclosing Zone A in barrier obstacles.');
-      world.reset();
-      world.toggleObstacle(13, 2);
-      world.toggleObstacle(15, 2);
-      world.toggleObstacle(14, 1);
-      world.toggleObstacle(14, 3);
-      renderer.render(world.dock, null, []);
-
-      simManager.startMission({
-        action: 'deliver',
-        targetItem: 'red_box',
-        destination: 'zone_a'
-      });
-      return;
-    }
-
-    const task = PRESET_TASKS[presetId];
-    if (task) {
-      const inputEl = document.getElementById('mission-input') as HTMLInputElement;
-      if (inputEl) {
-        inputEl.value = btn.textContent?.replace(/^\d+\.\s*/, '') || '';
-      }
-      simManager.startMission(task);
-    }
-  });
-});
-
-// Run Mission button handler (runs whatever task or defaults to Preset 1)
-const runBtn = document.getElementById('btn-run');
-runBtn?.addEventListener('click', () => {
-  simManager.startMission(PRESET_TASKS['1']);
-});
-
-// 4. Speed Toggle Button
-const speedBtn = document.getElementById('btn-speed');
-speedBtn?.addEventListener('click', () => {
-  const newSpeed = simManager.speedMultiplier === 1 ? 2 : 1;
-  simManager.setSpeed(newSpeed);
-  if (speedBtn) {
-    speedBtn.textContent = `Speed: ${newSpeed}x`;
-  }
-});
-
-// 5. Reset Button
-const resetBtn = document.getElementById('btn-reset');
-resetBtn?.addEventListener('click', () => {
-  simManager.reset();
-  telemetry.log('INFO', 'Simulator reset to default state.');
-  updateStatusUI('IDLE');
-});
 
 // 6. Canvas Click (toggle obstacles)
 const canvasEl = document.getElementById('warehouse-canvas') as HTMLCanvasElement;
