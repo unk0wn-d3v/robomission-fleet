@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RoboMission Fleet — Warehouse Autonomous Simulator</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <!-- Header Banner -->
+  <header class="app-header">
+    <div class="brand">
+      <h1>RoboMission Fleet</h1>
+      <span id="app-status" class="status-badge">READY</span>
+    </div>
+    <div style="display: flex; gap: 0.5rem; align-items: center;">
+      <button id="btn-speed" class="btn btn-secondary" title="Toggle simulation speed">Speed: 1x</button>
+      <button id="btn-reset" class="btn btn-secondary" title="Reset simulator to default state">Reset World</button>
+    </div>
+  </header>
+
+  <!-- Controls & Presets Banner -->
+  <div class="controls-banner">
+    <div class="input-row">
+      <input 
+        type="text" 
+        id="mission-input" 
+        class="mission-input" 
+        placeholder="Type a plain-English mission (e.g. 'Pick up the red box and deliver it to Zone A')..."
+        autocomplete="off"
+      />
+      <button id="btn-run" class="btn btn-primary">Run Mission</button>
+    </div>
+
+    <div class="presets-row">
+      <span class="presets-label">Examples:</span>
+      <button class="btn btn-preset" data-preset="1">1. Deliver Red Box to Zone A</button>
+      <button class="btn btn-preset" data-preset="2">2. Blue Box to Zone B (Avoid Aisle)</button>
+      <button class="btn btn-preset" data-preset="3">3. Green Box to Zone A & Return</button>
+      <button class="btn btn-preset btn-failure" data-preset="4">4. Test: Blocked Destination</button>
+    </div>
+  </div>
+
+  <!-- Main Stage: Center Canvas + Side Telemetry Panel -->
+  <main class="main-stage">
+    <div class="canvas-container">
+      <canvas id="warehouse-canvas"></canvas>
+      <div class="canvas-hint">
+        <span>⚡ Click any grid cell to drop an obstacle (or clear an obstacle).</span>
+      </div>
+    </div>
+
+    <aside class="telemetry-panel">
+      <div class="telemetry-header">
+        <h3>Explainability Log</h3>
+      </div>
+      <div id="telemetry-log-container" class="telemetry-log"></div>
+    </aside>
+  </main>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

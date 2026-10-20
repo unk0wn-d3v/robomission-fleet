@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RoboMission Fleet — Scope Companion</title>
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --surface: #111827;
+      --surface-border: #1f2937;
+      --surface-hover: #1e293b;
+      --text: #f3f4f6;
+      --text-muted: #9ca3af;
+      --primary: #38bdf8;
+      --primary-glow: rgba(56, 189, 248, 0.2);
+      --accent: #a855f7;
+      --success: #34d399;
+      --warning: #fbbf24;
+      --danger: #f87171;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    header {
+      border-bottom: 1px solid var(--surface-border);
+      padding-bottom: 1.5rem;
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .title-group h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #38bdf8, #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.25rem;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      background: rgba(251, 191, 36, 0.15);
+      color: var(--warning);
+      border: 1px solid rgba(251, 191, 36, 0.3);
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    .card h2 {
+      font-size: 1.3rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--primary);
+    }
+
+    .kernel-box {
+      border-left: 4px solid var(--primary);
+      background: linear-gradient(90deg, var(--primary-glow) 0%, transparent 100%);
+      padding: 1rem 1.25rem;
+      border-radius: 0 8px 8px 0;
+      font-size: 1.1rem;
+      color: #e0f2fe;
+    }
+
+    .diagram-container {
+      background: #060911;
+      border: 1px solid var(--surface-border);
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      overflow-x: auto;
+    }
+
+    svg.flow-chart {
+      width: 100%;
+      min-width: 720px;
+      height: auto;
+    }
+
+    /* Interactive reveals / tabs */
+    .tabs-nav {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--surface-border);
+      padding-bottom: 0.5rem;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      padding: 0.5rem 1.25rem;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn:hover {
+      background: var(--surface-hover);
+      color: var(--text);
+    }
+
+    .tab-btn.active {
+      background: var(--surface-hover);
+      color: var(--primary);
+      border-color: var(--surface-border);
+    }
+
+    .tab-btn.active[data-target="now"] {
+      border-bottom: 2px solid var(--success);
+      color: var(--success);
+    }
+    .tab-btn.active[data-target="later"] {
+      border-bottom: 2px solid var(--warning);
+      color: var(--warning);
+    }
+    .tab-btn.active[data-target="cut"] {
+      border-bottom: 2px solid var(--danger);
+      color: var(--danger);
+    }
+
+    .tab-panel {
+      display: none;
+      animation: fadeIn 0.25s ease-in-out;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .scope-list {
+      list-style: none;
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .scope-item {
+      padding: 0.85rem 1rem;
+      border-radius: 8px;
+      background: #0f172a;
+      border: 1px solid var(--surface-border);
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+
+    .scope-item .pill {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    .pill.now { background: rgba(52, 211, 153, 0.2); color: var(--success); }
+    .pill.later { background: rgba(251, 191, 36, 0.2); color: var(--warning); }
+    .pill.cut { background: rgba(248, 113, 113, 0.2); color: var(--danger); }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+
+    @media (max-width: 768px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+
+    .proof-step {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .proof-step-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--surface-hover);
+      border: 1px solid var(--primary);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .note-canonical {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-align: center;
+      margin-top: 2rem;
+      padding: 1rem;
+      border-top: 1px solid var(--surface-border);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="title-group">
+        <h1>RoboMission Fleet</h1>
+        <p class="subtitle">Scope Companion & Core Loop Architecture</p>
+      </div>
+      <div>
+        <span class="badge" style="background: rgba(52, 211, 153, 0.15); color: var(--success); border-color: rgba(52, 211, 153, 0.3);">Scope: Approved</span>
+      </div>
+    </header>
+
+    <!-- The Unique Kernel -->
+    <div class="card">
+      <h2>🎯 The Unique Kernel</h2>
+      <div class="kernel-box">
+        Demystifying robot autonomy for beginners by connecting natural-language missions directly to deterministic A* pathfinding, real-time obstacle rerouting, and a live explainability log that shows autonomy as a series of understandable decisions.
+      </div>
+    </div>
+
+    <!-- Core Loop Flowchart -->
+    <div class="card">
+      <h2>🔄 The Interactive Core Loop</h2>
+      <div class="diagram-container">
+        <svg class="flow-chart" viewBox="0 0 900 240" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#0284c7" />
+              <stop offset="100%" stop-color="#0369a1" />
+            </linearGradient>
+            <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#7c3aed" />
+              <stop offset="100%" stop-color="#6d28d9" />
+            </linearGradient>
+            <linearGradient id="emeraldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#059669" />
+              <stop offset="100%" stop-color="#047857" />
+            </linearGradient>
+            <linearGradient id="amberGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#d97706" />
+              <stop offset="100%" stop-color="#b45309" />
+            </linearGradient>
+            <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b" />
+            </marker>
+          </defs>
+
+          <!-- Step 1: Input -->
+          <rect x="20" y="30" width="150" height="90" rx="8" fill="url(#blueGrad)" stroke="#38bdf8" stroke-width="1.5" />
+          <text x="95" y="65" fill="#ffffff" font-size="14" font-weight="700" text-anchor="middle">1. User Mission</text>
+          <text x="95" y="85" fill="#bae6fd" font-size="11" text-anchor="middle">"Move blue crate to Bay 2"</text>
+          <text x="95" y="102" fill="#7dd3fc" font-size="10" text-anchor="middle">(Presets or custom text)</text>
+
+          <!-- Line 1 -> 2 -->
+          <line x1="170" y1="75" x2="210" y2="75" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)" />
+
+          <!-- Step 2: Parser -->
+          <rect x="215" y="30" width="150" height="90" rx="8" fill="url(#purpleGrad)" stroke="#a855f7" stroke-width="1.5" />
+          <text x="290" y="65" fill="#ffffff" font-size="14" font-weight="700" text-anchor="middle">2. Mission Parser</text>
+          <text x="290" y="85" fill="#e9d5ff" font-size="11" text-anchor="middle">LLM + Keyword Fallback</text>
+          <text x="290" y="102" fill="#c084fc" font-size="10" text-anchor="middle">Structured JSON task</text>
+
+          <!-- Line 2 -> 3 -->
+          <line x1="365" y1="75" x2="405" y2="75" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)" />
+
+          <!-- Step 3: A* Planner -->
+          <rect x="410" y="30" width="150" height="90" rx="8" fill="url(#emeraldGrad)" stroke="#34d399" stroke-width="1.5" />
+          <text x="485" y="65" fill="#ffffff" font-size="14" font-weight="700" text-anchor="middle">3. A* Path Planning</text>
+          <text x="485" y="85" fill="#a7f3d0" font-size="11" text-anchor="middle">Deterministic Shortest Path</text>
+          <text x="485" y="102" fill="#6ee7b7" font-size="10" text-anchor="middle">Grid coordinates sequence</text>
+
+          <!-- Line 3 -> 4 -->
+          <line x1="560" y1="75" x2="600" y2="75" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)" />
+
+          <!-- Step 4: Movement -->
+          <rect x="605" y="30" width="160" height="90" rx="8" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5" />
+          <text x="685" y="65" fill="#ffffff" font-size="14" font-weight="700" text-anchor="middle">4. Robot Movement</text>
+          <text x="685" y="85" fill="#94a3b8" font-size="11" text-anchor="middle">Canvas animation</text>
+          <text x="685" y="102" fill="#38bdf8" font-size="10" text-anchor="middle">Step-by-step progress</text>
+
+          <!-- Dynamic Replan Loop (Underneath) -->
+          <!-- User clicks grid -->
+          <rect x="520" y="150" width="170" height="75" rx="8" fill="url(#amberGrad)" stroke="#fbbf24" stroke-width="1.5" />
+          <text x="605" y="180" fill="#ffffff" font-size="13" font-weight="700" text-anchor="middle">⚡ Live Obstacle Drop</text>
+          <text x="605" y="198" fill="#fef3c7" font-size="11" text-anchor="middle">User clicks on active path</text>
+          <text x="605" y="213" fill="#fde68a" font-size="10" text-anchor="middle">Triggers instant re-route</text>
+
+          <!-- Replan arrow back to A* -->
+          <path d="M 520 185 L 485 185 L 485 125" fill="none" stroke="#fbbf24" stroke-width="2" stroke-dasharray="4" marker-end="url(#arrow)" />
+
+          <!-- Explainability Output -->
+          <rect x="790" y="30" width="95" height="195" rx="8" fill="#0f172a" stroke="#475569" stroke-width="1.5" />
+          <text x="837" y="60" fill="#94a3b8" font-size="11" font-weight="700" text-anchor="middle">EXPLAIN</text>
+          <text x="837" y="75" fill="#94a3b8" font-size="11" font-weight="700" text-anchor="middle">LOG</text>
+          <line x1="800" y1="85" x2="875" y2="85" stroke="#334155" stroke-width="1" />
+          <text x="837" y="110" fill="#64748b" font-size="9" text-anchor="middle">"Parsed task"</text>
+          <text x="837" y="130" fill="#64748b" font-size="9" text-anchor="middle">"Route: 14 steps"</text>
+          <text x="837" y="155" fill="#fbbf24" font-size="9" text-anchor="middle">"Obstacle at (4,6)"</text>
+          <text x="837" y="175" fill="#34d399" font-size="9" text-anchor="middle">"Detour calculated"</text>
+          <text x="837" y="200" fill="#38bdf8" font-size="9" text-anchor="middle">"Mission complete"</text>
+
+          <!-- Connecting to log -->
+          <line x1="765" y1="75" x2="785" y2="75" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)" />
+          <line x1="690" y1="185" x2="785" y2="185" stroke="#fbbf24" stroke-width="1.5" marker-end="url(#arrow)" />
+        </svg>
+      </div>
+    </div>
+
+    <!-- User Persona & What Working Looks Like -->
+    <div class="grid-2">
+      <div class="card">
+        <h2>👤 Who It's For</h2>
+        <p><strong>Students and beginners</strong> exploring autonomous robotics and multi-agent systems.</p>
+        <p style="margin-top: 0.5rem; color: var(--text-muted);">
+          <em>Today's friction:</em> Overwhelmed by complex Linux ROS stacks, abstract A* matrices, or static textbook figures.
+        </p>
+        <p style="margin-top: 0.5rem; color: var(--text-muted);">
+          <em>Our solution:</em> An instant-load browser sandbox where every instruction, calculation, and detour is immediately visible and explained.
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>🏁 What "Working" Looks Like (1-3 min Demo)</h2>
+        <div class="proof-step">
+          <div class="proof-step-num">1</div>
+          <div><strong>Preset Mission:</strong> Click example mission -> LLM/Fallback parses to structured JSON -> A* plots path.</div>
+        </div>
+        <div class="proof-step">
+          <div class="proof-step-num">2</div>
+          <div><strong>Transit:</strong> Single robot follows the grid path smoothly with live telemetry.</div>
+        </div>
+        <div class="proof-step">
+          <div class="proof-step-num">3</div>
+          <div><strong>The "Aha!" Moment:</strong> Drop obstacle directly on its path -> Robot halts -> Replans detour -> Log explains the choice.</div>
+        </div>
+        <div class="proof-step">
+          <div class="proof-step-num">4</div>
+          <div><strong>Graceful Failure:</strong> Trap target behind walls -> System detects unreachable goal and clearly reports why.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Structured Reveals: Now / Later / Cut -->
+    <div class="card">
+      <h2>📦 Scope Boundaries & Tradeoffs</h2>
+      <div class="tabs-nav">
+        <button class="tab-btn active" data-target="now">Now (POC Boundary)</button>
+        <button class="tab-btn" data-target="later">Later (Tiers 3 & 4)</button>
+        <button class="tab-btn" data-target="cut">Explicitly Cut</button>
+      </div>
+
+      <!-- NOW -->
+      <div id="panel-now" class="tab-panel active">
+        <ul class="scope-list">
+          <li class="scope-item">
+            <span class="pill now">NOW</span>
+            <div><strong>Single Autonomous Robot:</strong> Deterministic state machine (idle, navigating, carrying, replanning, arrived).</div>
+          </li>
+          <li class="scope-item">
+            <span class="pill now">NOW</span>
+            <div><strong>2D Canvas Warehouse World:</strong> Clear grid cells, pickup locations, delivery bays, and static barriers.</div>
+          </li>
+          <li class="scope-item">
+            <span class="pill now">NOW</span>
+            <div><strong>Deterministic A* Pathfinding:</strong> 4-directional shortest path algorithm with full unit test coverage.</div>
+          </li>
+          <li class="scope-item">
+            <span class="pill now">NOW</span>
+            <div><strong>Dual Mission Parser:</strong> LLM prompt parser + strict JSON schema + offline rule-based fallback parser.</div>
+          </li>
+          <li class="scope-item">
+            <span class="pill now">NOW</span>
+            <div><strong>Live Obstacle Drop & Replan:</strong> Click any cell to place a hazard; robot immediately re-evaluates route.</div>
+          </li>
+          <li class="scope-item">
+            <span class="pill now">NOW</span>
+            <div><strong>Real-Time Explainability Log:</strong> Human-readable narration explaining decisions, detours, and failure states.</div>
+          </li>
+          <li class="scope-item">
+            <span class="pill now">NOW</span>
+            <div><strong>Demo Controls:</strong> Reset button, 1x/2x speed controls, and 3 preset missions + 1 impossible case.</div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- LATER -->
+      <div id="panel-later" class="tab-panel">
+        <ul class="scope-list">
+          <li class="scope-item">
+            <span class="pill later">LATER</span>
+            <div><strong>Second Robot (Tier 3):</strong> Multi-agent fleet dispatching tasks simultaneously.</div>
+          </li>
+          <li class="scope-item">
+            <span class="pill later">LATER</span>
+            <div><strong>Collision Avoidance & Yielding (Tier 3):</strong> Spatial-temporal reservation or robot-to-robot yield priority.</div>
+          </li>
+          <li class="scope-item">
+            <span class="pill later">LATER</span>
+            <div><strong>Visual Search Frontier (Tier 4):</strong> Real-time animation of A* open/closed set node expansion.</div>
+          </li>
+          <li class="scope-item">
+            <span class="pill later">LATER</span>
+            <div><strong>Third Robot & Layout Selector:</strong> Multi-floor layouts or dynamic warehouse size switching.</div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- CUT -->
+      <div id="panel-cut" class="tab-panel">
+        <ul class="scope-list">
+          <li class="scope-item">
+            <span class="pill cut">CUT</span>
+            <div><strong>Backend / Database / Cloud:</strong> Pure client-side browser app for 100% zero-setup portability.</div>
+          </li>
+          <li class="scope-item">
+            <span class="pill cut">CUT</span>
+            <div><strong>User Authentication & Profiles:</strong> Reviewers do not create accounts; frictionless access is essential.</div>
+          </li>
+          <li class="scope-item">
+            <span class="pill cut">CUT</span>
+            <div><strong>Continuous Physics & Kinematics:</strong> Discrete grid navigation avoids physics engine bugs and nondeterminism.</div>
+          </li>
+          <li class="scope-item">
+            <span class="pill cut">CUT</span>
+            <div><strong>ROS / ROS2 Integration:</strong> Out of scope for a fast, accessible browser learning proof of concept.</div>
+          </li>
+          <li class="scope-item">
+            <span class="pill cut">CUT</span>
+            <div><strong>Custom Map Drawing Editor:</strong> Preset layouts keep the demo predictable and fast to build.</div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="note-canonical">
+      Source of Truth: <a href="scope.md" style="color: var(--primary);">devpost/scope.md</a> (Markdown). This HTML page is a visual companion for review.
+    </div>
+  </div>
+
+  <script>
+    // Tab switching interaction
+    const tabs = document.querySelectorAll('.tab-btn');
+    const panels = document.querySelectorAll('.tab-panel');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        panels.forEach(p => p.classList.remove('active'));
+
+        tab.classList.add('active');
+        const target = tab.getAttribute('data-target');
+        const activePanel = document.getElementById('panel-' + target);
+        if (activePanel) {
+          activePanel.classList.add('active');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RoboMission Fleet — PRD Companion</title>
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --surface: #111827;
+      --surface-border: #1f2937;
+      --surface-hover: #1e293b;
+      --text: #f3f4f6;
+      --text-muted: #9ca3af;
+      --primary: #38bdf8;
+      --primary-glow: rgba(56, 189, 248, 0.2);
+      --accent: #a855f7;
+      --success: #34d399;
+      --warning: #fbbf24;
+      --danger: #f87171;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 1040px;
+      margin: 0 auto;
+    }
+
+    header {
+      border-bottom: 1px solid var(--surface-border);
+      padding-bottom: 1.5rem;
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .title-group h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #38bdf8, #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.25rem;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      background: rgba(251, 191, 36, 0.15);
+      color: var(--warning);
+      border: 1px solid rgba(251, 191, 36, 0.3);
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    .card h2 {
+      font-size: 1.3rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--primary);
+    }
+
+    /* Expansion Highlight Callout */
+    .expansion-callout {
+      background: linear-gradient(90deg, rgba(56, 189, 248, 0.1) 0%, rgba(129, 140, 248, 0.05) 100%);
+      border-left: 4px solid var(--primary);
+      padding: 1rem 1.25rem;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 1.5rem;
+      font-size: 0.95rem;
+      color: #e0f2fe;
+    }
+
+    /* 3-Zone Layout Preview */
+    .layout-mockup {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      grid-template-rows: auto 1fr;
+      gap: 0.75rem;
+      background: #080d1a;
+      border: 1px solid var(--surface-border);
+      border-radius: 10px;
+      padding: 1rem;
+      margin: 1rem 0;
+    }
+
+    .mockup-top {
+      grid-column: 1 / -1;
+      background: #1e293b;
+      border: 1px dashed var(--primary);
+      border-radius: 6px;
+      padding: 0.75rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #93c5fd;
+    }
+
+    .mockup-grid {
+      background: #0f172a;
+      border: 1px dashed var(--success);
+      border-radius: 6px;
+      min-height: 200px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      color: #86efac;
+      font-size: 0.9rem;
+    }
+
+    .mockup-log {
+      background: #0f172a;
+      border: 1px dashed var(--warning);
+      border-radius: 6px;
+      padding: 1rem;
+      color: #fde047;
+      font-size: 0.85rem;
+    }
+
+    /* Interactive Stepper */
+    .step-controls {
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .step-btn {
+      background: #1e293b;
+      border: 1px solid var(--surface-border);
+      color: var(--text-muted);
+      padding: 0.5rem 0.85rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .step-btn:hover {
+      background: var(--surface-hover);
+      color: var(--text);
+    }
+
+    .step-btn.active {
+      background: var(--primary);
+      color: #0b0f19;
+      border-color: var(--primary);
+    }
+
+    .step-display {
+      background: #060911;
+      border: 1px solid var(--surface-border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      min-height: 120px;
+    }
+
+    .step-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .step-desc {
+      color: var(--text);
+      font-size: 0.95rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .step-log-preview {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.85rem;
+      background: #111827;
+      border-left: 3px solid var(--accent);
+      padding: 0.5rem 0.75rem;
+      border-radius: 0 4px 4px 0;
+      color: #e9d5ff;
+    }
+
+    /* Tabs for Acceptance Criteria */
+    .tabs-nav {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--surface-border);
+      padding-bottom: 0.5rem;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn:hover {
+      background: var(--surface-hover);
+      color: var(--text);
+    }
+
+    .tab-btn.active {
+      background: var(--surface-hover);
+      color: var(--primary);
+      border-color: var(--surface-border);
+    }
+
+    .tab-panel {
+      display: none;
+      animation: fadeIn 0.25s ease-in-out;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .criteria-list {
+      list-style: none;
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .criteria-item {
+      padding: 0.85rem 1rem;
+      border-radius: 8px;
+      background: #0f172a;
+      border: 1px solid var(--surface-border);
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      font-size: 0.95rem;
+    }
+
+    .check-icon {
+      color: var(--success);
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .state-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .state-card {
+      background: #0f172a;
+      border: 1px solid var(--surface-border);
+      border-radius: 8px;
+      padding: 1rem;
+    }
+
+    .state-card h4 {
+      font-size: 0.95rem;
+      margin-bottom: 0.35rem;
+      color: var(--primary);
+    }
+
+    .state-card p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .note-canonical {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-align: center;
+      margin-top: 2rem;
+      padding: 1rem;
+      border-top: 1px solid var(--surface-border);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="title-group">
+        <h1>RoboMission Fleet</h1>
+        <p class="subtitle">PRD Interactive Companion & Behavioral Specifications</p>
+      </div>
+      <div>
+        <span class="badge" style="background: rgba(52, 211, 153, 0.15); color: var(--success); border-color: rgba(52, 211, 153, 0.3);">PRD: Approved</span>
+      </div>
+    </header>
+
+    <!-- Expansion Callout -->
+    <div class="expansion-callout">
+      <strong>Scope to PRD Expansion:</strong> Scope committed to a single-robot POC with live obstacle replanning and an explainability log. The PRD specifies exact behavior: 3 concrete preset missions, single-screen 3-zone layout, pause-and-replan timing, specific log statements for detours and unreachability, and click-to-place/click-to-remove obstacle interactions.
+    </div>
+
+    <!-- Layout & Surfaces Visualizer -->
+    <div class="card">
+      <h2>🖥️ Unified Screen Layout (3 Zones)</h2>
+      <div class="layout-mockup">
+        <div class="mockup-top">
+          <strong>Top Control Zone</strong>: [Input: "Pick up red box..."] [Run Button] | [Preset 1] [Preset 2] [Preset 3] [Failure Test] | [Speed: 1x/2x] [Reset]
+        </div>
+        <div class="mockup-grid">
+          <strong>Central Warehouse Grid (Canvas)</strong>
+          <span style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.5rem;">
+            [Dock/Start] 🤖 Blue Robot &bull; 📦 Red/Blue/Green Crates &bull; 🟩 Zone A & B Drop Bays &bull; ⚡ Click Cell to Drop Hazard
+          </span>
+          <span style="font-size: 0.8rem; color: #38bdf8; margin-top: 0.35rem;">
+            Cyan Path Line dynamically plots across cells & trims during transit
+          </span>
+        </div>
+        <div class="mockup-log">
+          <strong>Side Telemetry Panel</strong>
+          <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.5rem; line-height: 1.4;">
+            [10:00:01] <span style="color: #38bdf8;">INFO:</span> System ready<br>
+            [10:00:05] <span style="color: #a855f7;">PARSE:</span> Action: Deliver Red Box<br>
+            [10:00:06] <span style="color: #34d399;">PLAN:</span> Shortest path: 12 steps<br>
+            [10:00:10] <span style="color: #fbbf24;">WARN:</span> Obstacle detected at (4,5)<br>
+            [10:00:11] <span style="color: #34d399;">REPLAN:</span> Detour found (14 steps)
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Core Journey Interactive Stepper -->
+    <div class="card">
+      <h2>🚶 Core User Journey Step-Through</h2>
+      <div class="step-controls">
+        <button class="step-btn active" data-step="1">1. Ready State</button>
+        <button class="step-btn" data-step="2">2. Mission Select</button>
+        <button class="step-btn" data-step="3">3. Parsing</button>
+        <button class="step-btn" data-step="4">4. A* Plan</button>
+        <button class="step-btn" data-step="5">5. Moving</button>
+        <button class="step-btn" data-step="6">6. Obstacle Drop</button>
+        <button class="step-btn" data-step="7">7. Replanning</button>
+        <button class="step-btn" data-step="8">8. Arrival / Blocked</button>
+      </div>
+
+      <div class="step-display">
+        <div id="step-title" class="step-title">Step 1: Arrival & Initial Ready State</div>
+        <div id="step-desc" class="step-desc">
+          User opens the app locally via <code>npm run dev</code>. The 2D grid displays an idle blue robot at the dock, items in pickup bays, green drop zones, and fixed barriers.
+        </div>
+        <div id="step-log" class="step-log-preview">
+          [LOG] System ready. Select an example mission or enter your own.
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabbed Behavioral Specifications -->
+    <div class="card">
+      <h2>📋 Concrete Acceptance Criteria</h2>
+      <div class="tabs-nav">
+        <button class="tab-btn active" data-target="parser">Mission Parser</button>
+        <button class="tab-btn" data-target="pathfinding">A* Pathfinding</button>
+        <button class="tab-btn" data-target="obstacles">Live Obstacles</button>
+        <button class="tab-btn" data-target="telemetry">Explainability Log</button>
+        <button class="tab-btn" data-target="states">States & Controls</button>
+      </div>
+
+      <!-- PARSER -->
+      <div id="panel-parser" class="tab-panel active">
+        <ul class="criteria-list">
+          <li class="criteria-item">
+            <span class="check-icon">✓</span>
+            <div><strong>Dual-Mode Extraction:</strong> Parses natural language into strict JSON: <code>{ action, item, destination, avoid, returnToDock }</code>.</div>
+          </li>
+          <li class="criteria-item">
+            <span class="check-icon">✓</span>
+            <div><strong>Offline Fallback:</strong> Rule-based keyword/regex parser ensures presets and standard prompts run with 100% offline reliability.</div>
+          </li>
+          <li class="criteria-item">
+            <span class="check-icon">✓</span>
+            <div><strong>Graceful Invalid Handling:</strong> Inputs like <em>"fly to the moon"</em> are rejected, robot remains idle, input text is preserved, and a clarifying hint is logged.</div>
+          </li>
+          <li class="criteria-item">
+            <span class="check-icon">✓</span>
+            <div><strong>3 Preset Buttons:</strong> Preset 1 (Standard delivery), Preset 2 (Avoidance), Preset 3 (Multi-step with return to dock).</div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- PATHFINDING -->
+      <div id="panel-pathfinding" class="tab-panel">
+        <ul class="criteria-list">
+          <li class="criteria-item">
+            <span class="check-icon">✓</span>
+            <div><strong>Deterministic Manhattan A*:</strong> Calculates mathematically optimal shortest path across grid cells, avoiding boundaries and static walls.</div>
+          </li>
+          <li class="criteria-item">
+            <span class="check-icon">✓</span>
+            <div><strong>Cyan Vector Visualization:</strong> Overlay route renders smoothly across the grid before the robot moves.</div>
+          </li>
+          <li class="criteria-item">
+            <span class="check-icon">✓</span>
+            <div><strong>Dynamic Path Trimming:</strong> As the robot advances cell-by-cell, traversed path segments clear cleanly.</div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- OBSTACLES -->
+      <div id="panel-obstacles" class="tab-panel">
+        <ul class="criteria-list">
+          <li class="criteria-item">
+            <span class="check-icon">✓</span>
+            <div><strong>Click-to-Drop Interaction:</strong> Clicking any empty grid cell during robot transit immediately drops a warning hazard (spill/rack).</div>
+          </li>
+          <li class="criteria-item">
+            <span class="check-icon">✓</span>
+            <div><strong>Instant Detection & Replan:</strong> If obstacle intersects the active trajectory, robot pauses, recalculates detour, updates cyan route line, and resumes.</div>
+          </li>
+          <li class="criteria-item">
+            <span class="check-icon">✓</span>
+            <div><strong>Interactive Toggle / Unblock:</strong> Clicking an existing obstacle removes it, enabling users to unblock walled paths.</div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- TELEMETRY -->
+      <div id="panel-telemetry" class="tab-panel">
+        <ul class="criteria-list">
+          <li class="criteria-item">
+            <span class="check-icon">✓</span>
+            <div><strong>Real-Time Narration:</strong> Explains parsing results, path step counts, obstacle coordinates, replan reasoning, and goal delivery.</div>
+          </li>
+          <li class="criteria-item">
+            <span class="check-icon">✓</span>
+            <div><strong>Categorized Event Badges:</strong> Visual badges for INFO, PLAN, WARN, SUCCESS, and ERROR.</div>
+          </li>
+          <li class="criteria-item">
+            <span class="check-icon">✓</span>
+            <div><strong>Auto-Scroll:</strong> Keeps latest decision visible while preserving complete run history until Reset.</div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- STATES & CONTROLS -->
+      <div id="panel-states" class="tab-panel">
+        <div class="state-grid">
+          <div class="state-card">
+            <h4>Ready State</h4>
+            <p>Idle docked robot, stationary items, system ready log.</p>
+          </div>
+          <div class="state-card">
+            <h4>In-Transit State</h4>
+            <p>Robot moving cell-by-cell, interactive click-to-drop enabled.</p>
+          </div>
+          <div class="state-card">
+            <h4>Replanning State</h4>
+            <p>Brief pause, alternative A* route computed, route line updated.</p>
+          </div>
+          <div class="state-card">
+            <h4>Blocked / Trapped State</h4>
+            <p>No valid path possible. Robot stops safely; log instructs user to clear obstacle or reset.</p>
+          </div>
+          <div class="state-card">
+            <h4>Reset Button</h4>
+            <p>Halts movement, clears dynamic obstacles, resets robot and items to initial positions.</p>
+          </div>
+          <div class="state-card">
+            <h4>Speed Toggle (1x / 2x)</h4>
+            <p>Allows normal human-readable speed (1x) or rapid demo verification (2x).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="note-canonical">
+      Source of Truth: <a href="prd.md" style="color: var(--primary);">devpost/prd.md</a> (Markdown). This HTML page is a visual companion for review.
+    </div>
+  </div>
+
+  <script>
+    // Tab switching interaction
+    const tabs = document.querySelectorAll('.tab-btn');
+    const panels = document.querySelectorAll('.tab-panel');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        panels.forEach(p => p.classList.remove('active'));
+
+        tab.classList.add('active');
+        const target = tab.getAttribute('data-target');
+        const activePanel = document.getElementById('panel-' + target);
+        if (activePanel) {
+          activePanel.classList.add('active');
+        }
+      });
+    });
+
+    // Step-through data
+    const stepData = {
+      1: {
+        title: "Step 1: Arrival & Initial Ready State",
+        desc: "User opens the app locally. The 2D grid displays an idle blue robot at the dock, items in pickup bays, green drop zones, and fixed barriers.",
+        log: "[LOG] System ready. Select an example mission or enter your own."
+      },
+      2: {
+        title: "Step 2: Mission Selection",
+        desc: "User clicks one of the 3 presets (e.g. 'Pick up red box...') or types a custom instruction and clicks Run Mission.",
+        log: "[INPUT] User submitted: 'Pick up red box and deliver it to Zone A'"
+      },
+      3: {
+        title: "Step 3: Parsing & Intent Extraction",
+        desc: "Parser extracts JSON schema: { action: 'deliver', item: 'red_box', dest: 'zone_a' }. Out-of-domain inputs are safely rejected.",
+        log: "[PARSE] Structured task extracted. Target: Red Box -> Destination: Zone A."
+      },
+      4: {
+        title: "Step 4: Initial A* Path Planning",
+        desc: "Robot runs 4-directional A* avoiding static racks. A glowing cyan line renders across grid cells showing planned transit.",
+        log: "[PLAN] Shortest path calculated: 14 steps avoiding static hazards."
+      },
+      5: {
+        title: "Step 5: Execution & Movement",
+        desc: "Robot moves along the cyan path. As it reaches the red box, cargo attaches; robot proceeds to Zone A.",
+        log: "[MOVE] Waypoint reached: Red Box secured. Navigating to Zone A."
+      },
+      6: {
+        title: "Step 6: The Climax (Live Obstacle Drop)",
+        desc: "User clicks an empty cell directly in the robot's upcoming path. An orange hazard instantly spawns.",
+        log: "[USER] Placed hazard barrier at cell (6, 4)."
+      },
+      7: {
+        title: "Step 7: Adaptive Replanning",
+        desc: "Robot pauses immediately. It queries A* with the new barrier included. A new detour cyan line replaces the blocked line.",
+        log: "[REPLAN] Obstacle detected ahead. Recalculating route... New path found (16 steps). Resuming mission."
+      },
+      8: {
+        title: "Step 8: Arrival or Safe Stop",
+        desc: "Normal: Robot unloads at Zone A and logs success. If blocked on all sides: Robot stops safely and logs blocked guidance.",
+        log: "[SUCCESS] Mission complete: Red Box delivered to Zone A. Robot idling."
+      }
+    };
+
+    const stepBtns = document.querySelectorAll('.step-btn');
+    const stepTitle = document.getElementById('step-title');
+    const stepDesc = document.getElementById('step-desc');
+    const stepLog = document.getElementById('step-log');
+
+    stepBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        stepBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const s = btn.getAttribute('data-step');
+        if (stepData[s]) {
+          stepTitle.innerText = stepData[s].title;
+          stepDesc.innerHTML = stepData[s].desc;
+          stepLog.innerText = stepData[s].log;
+        }
+      });
+    });
+  </script>
+</body>
+</html>
