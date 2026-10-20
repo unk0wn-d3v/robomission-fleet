@@ -19,7 +19,7 @@ Build mode: learn
   Learner check: Open http://localhost:5173, confirm the dark navy console loads with the 3 zones, visible warehouse grid with blue robot at dock, colored crates, drop zones, static shelves, and the initial ready log entry.
   Commit: `Scaffold project and render interactive warehouse grid`
 
-- [ ] **2. Deterministic A* Shortest Pathfinding & Cyan Vector Rendering**
+- [x] **2. Deterministic A* Shortest Pathfinding & Cyan Vector Rendering**
   Becomes usable: The robot computes the optimal Manhattan shortest path avoiding static obstacles, and the canvas draws the glowing cyan trajectory line connecting the waypoints.
   Why now: Pathfinding is the mathematical core of the robot; building and unit-testing it early with Vitest eliminates routing risks before animation is added.
   PRD ref: `prd.md > Features and Behavior` (2. Deterministic A* Pathfinding & Visualization)
@@ -61,7 +61,7 @@ Build mode: learn
 
 ## Hands-on Checkpoints
 
-- [ ] Early usable behavior explored — Slice 2 (Grid rendering + A* path finding verified)
+- [x] Early usable behavior explored — Slice 2 (Grid rendering + A* path finding verified)
 - [ ] Final kick-the-tires exploration and feedback completed — Slice 5 (Full simulator explored)
 
 ## Final Review
