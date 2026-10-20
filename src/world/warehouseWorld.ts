@@ -7,9 +7,9 @@ export class WarehouseWorld {
   public readonly dock: GridCoord = { x: 1, y: 1 };
 
   public readonly defaultItems: Record<CargoItemType, GridCoord> = {
-    red_box: { x: 3, y: 8 },
+    red_box: { x: 2, y: 9 },
     blue_box: { x: 7, y: 2 },
-    green_box: { x: 12, y: 9 }
+    green_box: { x: 11, y: 8 }
   };
 
   public readonly zones: Record<DestinationType, GridCoord> = {
@@ -34,19 +34,19 @@ export class WarehouseWorld {
     this.dynamicObstacles.clear();
     this.staticWalls.clear();
 
-    // Shelf Rack 1: Vertical aisle at columns 4 & 5
-    for (let y = 3; y <= 6; y++) {
+    // Aisle Rack A: columns 4 & 5, rows 4-7
+    for (let y = 4; y <= 7; y++) {
       this.staticWalls.add(`4,${y}`);
       this.staticWalls.add(`5,${y}`);
     }
 
-    // Shelf Rack 2: Vertical aisle at columns 9 & 10
-    for (let y = 4; y <= 7; y++) {
+    // Aisle Rack B: columns 9 & 10, rows 3-6
+    for (let y = 3; y <= 6; y++) {
       this.staticWalls.add(`9,${y}`);
       this.staticWalls.add(`10,${y}`);
     }
 
-    // Aisle divider rack between bays
+    // Aisle divider rack: column 7, rows 5-6
     this.staticWalls.add('7,5');
     this.staticWalls.add('7,6');
   }

@@ -9,7 +9,7 @@ Build mode: learn
 
 ## Slices
 
-- [ ] **1. Scaffold, 2D Grid Canvas & Initial World Render**
+- [x] **1. Scaffold, 2D Grid Canvas & Initial World Render**
   Becomes usable: The local Vite dev server runs, displaying the 3-zone industrial console (controls banner, 16x12 warehouse canvas grid, and side telemetry log) with the docked blue robot, crates, zones, static racks, and initial system ready log.
   Why now: Bootstraps the project scaffold, dependencies, styling, canvas drawing pipeline, and event logging so every subsequent slice has a working visual stage to build on.
   PRD ref: `prd.md > Screens and Layout`, `prd.md > Look and Feel`, `prd.md > States and Boundaries` (Ready State)
