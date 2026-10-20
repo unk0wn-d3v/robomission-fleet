@@ -135,6 +135,11 @@ const canvasEl = document.getElementById('warehouse-canvas') as HTMLCanvasElemen
 canvasEl.addEventListener('click', (e: MouseEvent) => {
   const coord = renderer.getGridCoordFromClick(e.clientX, e.clientY);
   if (coord) {
+    if (coord.x === simManager.robot.position.x && coord.y === simManager.robot.position.y) {
+      telemetry.log('WARN', `Cannot place an obstacle on the robot's current position (${coord.x}, ${coord.y}).`);
+      return;
+    }
+
     const result = world.toggleObstacle(coord.x, coord.y);
     if (result) {
       if (result.added) {
@@ -142,7 +147,8 @@ canvasEl.addEventListener('click', (e: MouseEvent) => {
       } else {
         telemetry.log('INFO', `Hazard obstacle removed from (${coord.x}, ${coord.y}).`);
       }
-      renderer.render(simManager.robot.position, simManager.robot.cargo, simManager.remainingPath);
+      simManager.onObstacleToggled(coord, result.added);
     }
   }
 });
+

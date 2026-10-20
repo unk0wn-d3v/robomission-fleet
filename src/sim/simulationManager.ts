@@ -62,6 +62,8 @@ export class SimulationManager {
     this.setState('PLANNING');
     this.telemetry.log('PLAN', `Planning Leg 1: Navigate from Dock (${this.robot.position.x}, ${this.robot.position.y}) to ${task.targetItem.replace('_', ' ')} at (${itemCoord.x}, ${itemCoord.y}).`);
 
+    this.currentLegTarget = itemCoord;
+
     const path = findPath(this.robot.position, itemCoord, this.world);
     if (!path) {
       this.telemetry.log('ERROR', `Cannot find path to ${task.targetItem}. Destination is blocked.`);
@@ -70,7 +72,6 @@ export class SimulationManager {
       return false;
     }
 
-    this.currentLegTarget = itemCoord;
     this.remainingPath = [...path];
     this.telemetry.log('INFO', `Path plotted (${path.length - 1} steps). Starting transit.`);
 
@@ -168,6 +169,62 @@ export class SimulationManager {
       this.telemetry.log('SUCCESS', 'Dock reached: Robot successfully recharged and ready for next mission.');
       this.remainingPath = [];
       this.renderer.render(this.robot.position, this.robot.cargo, []);
+    }
+  }
+
+  public onObstacleToggled(coord: GridCoord, added: boolean): void {
+    if (!added) {
+      // An obstacle was removed!
+      if (this.robot.state === 'BLOCKED' && this.currentLegTarget) {
+        this.telemetry.log('INFO', `Obstacle cleared at (${coord.x}, ${coord.y}). Checking if path reopened...`);
+        const path = findPath(this.robot.position, this.currentLegTarget, this.world);
+        if (path) {
+          this.remainingPath = [...path];
+          this.setState('MOVING');
+          this.telemetry.log('SUCCESS', `Path reopened (${path.length - 1} steps). Resuming mission!`);
+          this.renderer.render(this.robot.position, this.robot.cargo, this.remainingPath);
+          this.scheduleNextStep();
+          return;
+        }
+      }
+      this.renderer.render(this.robot.position, this.robot.cargo, this.remainingPath);
+      return;
+    }
+
+    // An obstacle was added! Check if it intersects the remaining path
+    const onActivePath = this.remainingPath.some(pt => pt.x === coord.x && pt.y === coord.y);
+
+    if (onActivePath && (this.robot.state === 'MOVING' || this.robot.state === 'PLANNING')) {
+      // Pause step timer
+      this.stop();
+      this.setState('REPLANNING');
+      this.telemetry.log('WARN', `Obstacle detected directly on active route at (${coord.x}, ${coord.y})! Halting to recalculate detour...`);
+
+      // Draw obstacle immediately
+      this.renderer.render(this.robot.position, this.robot.cargo, this.remainingPath);
+
+      if (!this.currentLegTarget) {
+        return;
+      }
+
+      // Query A* from current robot cell with the new obstacle in place
+      const detourPath = findPath(this.robot.position, this.currentLegTarget, this.world);
+
+      if (detourPath && detourPath.length > 0) {
+        this.remainingPath = [...detourPath];
+        this.telemetry.log('REPLAN', `Detour found (${detourPath.length - 1} steps). New route engaged, resuming mission.`);
+        this.setState('MOVING');
+        this.renderer.render(this.robot.position, this.robot.cargo, this.remainingPath);
+        this.scheduleNextStep();
+      } else {
+        this.remainingPath = [];
+        this.setState('BLOCKED');
+        this.telemetry.log('ERROR', 'Mission blocked: No valid detour around obstacles. Clear an obstacle or reset the mission.');
+        this.renderer.render(this.robot.position, this.robot.cargo, []);
+      }
+    } else {
+      // Placed outside active path, update canvas
+      this.renderer.render(this.robot.position, this.robot.cargo, this.remainingPath);
     }
   }
 

@@ -39,7 +39,7 @@ Build mode: learn
   Learner check: Trigger a test move, watch the blue robot follow the cyan path, pick up the box, unload at the drop zone, and verify the explainability log streams each event.
   Commit: `Add animated robot movement and telemetry narration`
 
-- [ ] **4. Live Obstacle Placement & Dynamic A* Replanning (The Kernel / Climax)**
+- [x] **4. Live Obstacle Placement & Dynamic A* Replanning (The Kernel / Climax)**
   Becomes usable: The learner clicks any grid cell along the active route while the robot is moving; an orange hazard drops, the robot immediately pauses, calculates an A* detour, updates the cyan vector, and resumes—with instant narration in the log. Enclosing the goal safely halts the robot with a diagnostic blocked message.
   Why now: This is the unique kernel and the climax of the demo video; building it now ensures the core value proposition is rock-solid.
   PRD ref: `prd.md > Features and Behavior` (3. Live Obstacle Placement & Real-Time Replanning), `prd.md > States and Boundaries` (Replanning & Blocked State)

@@ -111,4 +111,62 @@ describe('SimulationManager Core Loop', () => {
 
     expect(sim.robot.state).toBe('BLOCKED');
   });
+
+  it('detours in real time when an obstacle is placed directly on the active path mid-transit', () => {
+    const task: MissionTask = {
+      action: 'deliver',
+      targetItem: 'red_box',
+      destination: 'zone_a'
+    };
+
+    sim.startMission(task);
+
+    // Advance 2 steps
+    (sim as any).executeStep();
+    (sim as any).executeStep();
+
+    // Check next upcoming cell on path
+    const obstacleCell = sim.remainingPath[1];
+    expect(obstacleCell).toBeDefined();
+
+    // Place obstacle on active path!
+    world.toggleObstacle(obstacleCell.x, obstacleCell.y);
+    sim.onObstacleToggled(obstacleCell, true);
+
+    expect(stateHistory).toContain('REPLANNING');
+    expect(sim.robot.state).toBe('MOVING'); // resumed with detour
+    expect(sim.remainingPath.some(pt => pt.x === obstacleCell.x && pt.y === obstacleCell.y)).toBe(false);
+
+    // Run until finish
+    let iterations = 0;
+    while (sim.robot.state === 'MOVING' && iterations < 100) {
+      (sim as any).executeStep();
+      iterations++;
+    }
+    expect(sim.robot.state).toBe('ARRIVED');
+  });
+
+  it('resumes mission when user clears an obstacle that was blocking the path', () => {
+    // Trap red box
+    world.toggleObstacle(2, 8);
+    world.toggleObstacle(1, 9);
+    world.toggleObstacle(3, 9);
+    world.toggleObstacle(2, 10);
+
+    const task: MissionTask = {
+      action: 'deliver',
+      targetItem: 'red_box',
+      destination: 'zone_a'
+    };
+
+    sim.startMission(task);
+    expect(sim.robot.state).toBe('BLOCKED');
+
+    // User removes obstacle at (2, 8)
+    world.toggleObstacle(2, 8);
+    sim.onObstacleToggled({ x: 2, y: 8 }, false);
+
+    expect(sim.robot.state).toBe('MOVING'); // Successfully unblocked and resumed!
+  });
 });
+
