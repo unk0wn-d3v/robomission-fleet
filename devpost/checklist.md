@@ -70,14 +70,14 @@ Build mode: learn
 
 ## Code Tour and App Map
 
-- [ ] Learning activity complete — guided route, focused alternative, prior practice connected, or brief recap
-- [ ] Optional edit and transfer reflection addressed — offered/declined/already covered/not applicable as appropriate
-- [ ] `devpost/app-map.html` generated from finished code, checked, and shown, including a project-grounded practice to reuse
+- [x] Learning activity complete — guided route, focused alternative, prior practice connected, or brief recap
+- [x] Optional edit and transfer reflection addressed — offered/declined/already covered/not applicable as appropriate
+- [x] `devpost/app-map.html` generated from finished code, checked, and shown, including a project-grounded practice to reuse
 
-Activity and evidence: 
-Route and stops: 
-Edit outcome: 
-Reflection: 
-Activity mode: 
+Activity and evidence: Focused alternative connecting spec-driven verification to root-cause debugging (tracked in DECISIONS.md and verified via 20 passing Vitest tests).
+Route and stops: 1. src/parser/missionParser.ts (Intent extraction) -> 2. src/planner/astar.ts (Pathfinding) -> 3. src/sim/simulationManager.ts (Dynamic replanning).
+Edit outcome: Kept refinements: delivery bay persistence, telemetry refresh, and reset order fix.
+Reflection: Already covered through iterative slice verification and hands-on kick-the-tires testing.
+Activity mode: focused
 
 ## Revisions
