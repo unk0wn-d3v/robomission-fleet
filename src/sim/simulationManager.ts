@@ -51,6 +51,7 @@ export class SimulationManager {
     this.stop();
     this.activeTask = task;
     this.currentLegIndex = 0;
+    this.robot.cargo = null;
 
     const itemCoord = this.world.items.get(task.targetItem);
     if (!itemCoord) {
@@ -141,6 +142,10 @@ export class SimulationManager {
     } else if (this.currentLegIndex === 1) {
       // Leg 2 complete: Reached Destination Bay
       const deliveredItem = this.robot.dropCargo();
+      if (deliveredItem) {
+        const destCoord = this.world.zones[this.activeTask.destination];
+        this.world.items.set(deliveredItem, { ...destCoord });
+      }
       const destName = this.activeTask.destination.replace('_', ' ').toUpperCase();
       this.telemetry.log('SUCCESS', `Delivery bay reached. Cargo ${deliveredItem?.replace('_', ' ').toUpperCase()} safely unloaded at ${destName}.`);
 

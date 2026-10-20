@@ -62,11 +62,11 @@ Build mode: learn
 ## Hands-on Checkpoints
 
 - [x] Early usable behavior explored — Slice 2 (Grid rendering + A* path finding verified)
-- [ ] Final kick-the-tires exploration and feedback completed — Slice 5 (Full simulator explored)
+- [x] Final kick-the-tires exploration and feedback completed — Slice 5 (Full simulator explored)
 
 ## Final Review
 
-- [ ] Final review complete — feedback resolved and learner confirms ready to ship
+- [x] Final review complete — feedback resolved and learner confirms ready to ship
 
 ## Code Tour and App Map
 

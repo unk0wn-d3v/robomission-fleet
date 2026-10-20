@@ -56,7 +56,8 @@ export class ControlPanel {
     this.resetBtn?.addEventListener('click', () => {
       this.simManager.reset();
       this.inputEl.value = '';
-      this.telemetry.log('INFO', 'Simulator reset to default warehouse state.');
+      this.telemetry.clear();
+      this.telemetry.log('INFO', 'Simulator reset to default warehouse state. System READY.');
       this.updateStatusUI('IDLE');
     });
   }
